@@ -16,9 +16,9 @@ struct _bit_tree_ {
 	int number = 0;
 	int weight = 0;
 	bool NYT = false;
-	char symbol;    // Êı¾İ·ûºÅ
-	char code;      // ±àÂë
-	char fixcode;   // ¹Ì¶¨±àÂë
+	char symbol = 'X';    // æ•°æ®ç¬¦å·
+	char code;      // ç¼–ç 
+	char fixcode;   // å›ºå®šç¼–ç 
 };
 
 _bit_tree_ * _init_header_() {
@@ -27,7 +27,7 @@ _bit_tree_ * _init_header_() {
 	return _header_;
 }
 
-// ±éÀú¸÷¸ö½Úµã
+// éå†å„ä¸ªèŠ‚ç‚¹
 void _iterate_bit_tree(_bit_tree_ * bit_tree, int * weights, int * numbers, bool * NYTs) {
 	if (bit_tree->right == NULL && bit_tree->left == NULL) {
 		weights[bit_tree->number] = bit_tree->weight;
@@ -46,7 +46,7 @@ void _iterate_bit_tree(_bit_tree_ * bit_tree, int * weights, int * numbers, bool
 	NYTs[bit_tree->number] = bit_tree->NYT;
 }
 
-// ÕÒµ½¶ÔÓ¦µÄ½Úµã
+// æ‰¾åˆ°å¯¹åº”çš„èŠ‚ç‚¹
 _bit_tree_ * _locate_bit_tree_(_bit_tree_ * header, int number) {
 	if (header->number == number) {
 		return header;
@@ -66,7 +66,7 @@ _bit_tree_ * _locate_bit_tree_(_bit_tree_ * header, int number) {
 	return NULL;
 }
 
-// ¸ø¸÷¸ö½Úµã´òÉÏ±êÇ©
+// ç»™å„ä¸ªèŠ‚ç‚¹æ‰“ä¸Šæ ‡ç­¾
 bool _label_nodes_(_bit_tree_ * bit_tree, int & label) {
 	if (bit_tree->left != NULL) {
 		bool succ = _label_nodes_(bit_tree->left, label);
@@ -83,17 +83,17 @@ void _swap_bit_tree_(_bit_tree_ * temp1, _bit_tree_ * temp2) {
 	if (temp1 == NULL || temp2 == NULL)
 		return;
 	_bit_tree_ * temp1_parent = temp1->parent;
-	_bit_tree_ * temp2_parent = temp2->parent; // ÕÒµ½¸¸½Úµã
+	_bit_tree_ * temp2_parent = temp2->parent; // æ‰¾åˆ°çˆ¶èŠ‚ç‚¹
 
 	_bit_tree_ * temp1_left = temp1->left;
 	_bit_tree_ * temp2_left = temp2->left;
 	_bit_tree_ * temp1_right = temp1->right;
-	_bit_tree_ * temp2_right = temp2->right; // ÕÒµ½×Ó½Úµã
+	_bit_tree_ * temp2_right = temp2->right; // æ‰¾åˆ°å­èŠ‚ç‚¹
 
 	bool temp1_isleft = temp1_parent->left == temp1;
-	bool temp2_isleft = temp2_parent->left == temp2; // ÕÒµ½½ÚµãµÄ×óÓÒË³Ğò
+	bool temp2_isleft = temp2_parent->left == temp2; // æ‰¾åˆ°èŠ‚ç‚¹çš„å·¦å³é¡ºåº
 
-	// ¸¸½Úµã½»»»
+	// çˆ¶èŠ‚ç‚¹äº¤æ¢
 	if (temp1_isleft) {
 		temp1_parent->left = temp2;
 	}
@@ -108,7 +108,7 @@ void _swap_bit_tree_(_bit_tree_ * temp1, _bit_tree_ * temp2) {
 		temp2_parent->right = temp1;
 	}
 
-	// ×Ó½Úµã½»»»
+	// å­èŠ‚ç‚¹äº¤æ¢
 	if (temp1_left != NULL)
 		temp1_left->parent = temp2;
 	if (temp1_right != NULL)
@@ -118,7 +118,7 @@ void _swap_bit_tree_(_bit_tree_ * temp1, _bit_tree_ * temp2) {
 	if (temp2_right != NULL)
 		temp2_right->parent = temp1;
 
-	// ±¾½Úµã½»»»
+	// æœ¬èŠ‚ç‚¹äº¤æ¢
 	temp1->parent = temp2_parent;
 	temp2->parent = temp1_parent;
 	temp1->left = temp2_left;
@@ -128,13 +128,13 @@ void _swap_bit_tree_(_bit_tree_ * temp1, _bit_tree_ * temp2) {
 
 }
 
-// ¸üĞÂ¶ş²æÊ÷µÄÈ¨ÖØ Ó¦¸ÃÏòÏÂËÑË÷
+// æ›´æ–°äºŒå‰æ ‘çš„æƒé‡ åº”è¯¥å‘ä¸‹æœç´¢
 void _update_bit_tree_weight_(_bit_tree_ * bit_tree) {
 	if (bit_tree->left == NULL && bit_tree->right == NULL) {
 		if (bit_tree->parent != NULL) {
 			_update_bit_tree_weight_(bit_tree->parent);
 		}
-		return; // Ò¶×Ó½Úµã ²»ĞèÒª¸üĞÂ
+		return; // å¶å­èŠ‚ç‚¹ ä¸éœ€è¦æ›´æ–°
 	}
 	else {
 		bit_tree->weight = bit_tree->left->weight +
@@ -145,9 +145,9 @@ void _update_bit_tree_weight_(_bit_tree_ * bit_tree) {
 	}
 }
 
-// ¸üĞÂËùÓĞµÄÒ¶×Ó½ÚµãµÄÈ¨ÖØ
+// æ›´æ–°æ‰€æœ‰çš„å¶å­èŠ‚ç‚¹çš„æƒé‡
 void _update_all_weights_(_bit_tree_ * bit_tree, int & node_value) {
-	// ÏÈÕÒÒ¶×Ó½Úµã
+	// å…ˆæ‰¾å¶å­èŠ‚ç‚¹
 	if (bit_tree == NULL)
 		return;
 	if (bit_tree->left != NULL && bit_tree->right != NULL) {
@@ -167,11 +167,11 @@ void _update_all_weights_(_bit_tree_ * bit_tree, int & node_value) {
 	return;
 }
 
-// ¸üĞÂ¶ş²æÊ÷ ²¢ ½»»»¶ş²æÊ÷µÄÈ¨ÖØ
+// æ›´æ–°äºŒå‰æ ‘ å¹¶ äº¤æ¢äºŒå‰æ ‘çš„æƒé‡
 void _update_bit_tree_(_bit_tree_ * bit_tree) {
 	int label = 0;
 	_label_nodes_(bit_tree, label);
-	// ÏÈ±êºÅ£¬ÔÙ¼ì²é¸÷×ÔµÄÈ¨ÖØ
+	// å…ˆæ ‡å·ï¼Œå†æ£€æŸ¥å„è‡ªçš„æƒé‡
 	int * weights = new int[label];
 	int * numbers = new int[label];
 	bool * NYTs = new bool[label];
@@ -185,13 +185,13 @@ void _update_bit_tree_(_bit_tree_ * bit_tree) {
 	for (int ii = 0; ii < label; ii++) {
 		for (int jj = ii; jj < label; jj++) {
 			if (weights[ii] > weights[jj]) {
-				// ½»»»½Úµã
+				// äº¤æ¢èŠ‚ç‚¹
 				std::cout << weights[ii] << " " << weights[jj] << endl;
 				_bit_tree_ * temp1 = _locate_bit_tree_(bit_tree, ii);
 				_bit_tree_ * temp2 = _locate_bit_tree_(bit_tree, jj);
 				_swap_bit_tree_(temp1, temp2);
 				int _temp_ = 0;
-				_update_all_weights_(bit_tree, _temp_); // ¸üĞÂÈ¨ÖØ
+				_update_all_weights_(bit_tree, _temp_); // æ›´æ–°æƒé‡
 				_update_bit_tree_(bit_tree);
 				delete[] weights;
 				delete[] numbers;
@@ -206,12 +206,12 @@ void _update_bit_tree_(_bit_tree_ * bit_tree) {
 	delete[] NYTs;
 }
 
-// ´´½¨¶ş²æÊ÷
+// åˆ›å»ºäºŒå‰æ ‘
 _bit_tree_ * _create_bit_tree_() {
 	return new _bit_tree_;
 }
 
-// Ä¬ÈÏÊÇÔÚÓÒ±ß²åÈë½Úµã ×ó±ß²åÈëNYT½Úµã
+// é»˜è®¤æ˜¯åœ¨å³è¾¹æ’å…¥èŠ‚ç‚¹ å·¦è¾¹æ’å…¥NYTèŠ‚ç‚¹
 bool _insert_bit_tree_(_bit_tree_ * bit_tree, char data) {
 	if (bit_tree == NULL) return false;
 
@@ -237,28 +237,28 @@ bool _insert_bit_tree_(_bit_tree_ * bit_tree, char data) {
 	return true;
 }
 
-// É¾³ı¶ş²æÊ÷
+// åˆ é™¤äºŒå‰æ ‘
 void _remove_bit_tree_() {
 	// TODO
 }
 
-// ÕÒµ½½Úµã²¢Ôö¼ÓÈ¨ÖØ¡¢Èç¹ûÃ»ÓĞÕÒµ½È¨ÖØ£¬ÄÇ¾ÍÍùºóÃæÔö¼Ó½Úµã
+// æ‰¾åˆ°èŠ‚ç‚¹å¹¶å¢åŠ æƒé‡ã€å¦‚æœæ²¡æœ‰æ‰¾åˆ°æƒé‡ï¼Œé‚£å°±å¾€åé¢å¢åŠ èŠ‚ç‚¹
 bool _find_nodes_(_bit_tree_ * bit_tree, char data, bool NYTnode = false) {
 	if (!NYTnode) {
-		// ÏÈÕÒ½Úµã£¬Ã»ÓĞÕÒµ½¾ÍÕÒNYTnode
+		// å…ˆæ‰¾èŠ‚ç‚¹ï¼Œæ²¡æœ‰æ‰¾åˆ°å°±æ‰¾NYTnode
 		if (bit_tree->symbol == data) {
 			bit_tree->weight++;
 			_update_bit_tree_weight_(bit_tree);
 			return true;
 		}
 		else {
-			if (bit_tree->left == NULL || bit_tree->right == NULL) {
-				// ÊÇ·ñÓ¦¸Ã²åÈë×Ó½Úµã£¿
-				if (bit_tree->parent == NULL) {
+			if (bit_tree->left == NULL && bit_tree->right == NULL) {
+				// æ˜¯å¦åº”è¯¥æ’å…¥å­èŠ‚ç‚¹ï¼Ÿ
+				if (bit_tree->parent == NULL && bit_tree->weight == 0) {
 					_find_nodes_(bit_tree, data, true);
 					return true;
-				} // Èç¹û¼ì²éµ½¸Ã½ÚµãÊÇ³õÊ¼½Úµã£¬ÄÇÃ´Ö±½Ó´´½¨ĞÂ½Úµã
-				return false; // µ½Ò¶×Ó½ÚµãÁË 
+				} // å¦‚æœæ£€æŸ¥åˆ°è¯¥èŠ‚ç‚¹æ˜¯åˆå§‹èŠ‚ç‚¹ï¼Œé‚£ä¹ˆç›´æ¥åˆ›å»ºæ–°èŠ‚ç‚¹
+				return false; // åˆ°å¶å­èŠ‚ç‚¹äº† 
 			}
 			bool left_node_found;
 			if (bit_tree->left != NULL)
@@ -266,14 +266,15 @@ bool _find_nodes_(_bit_tree_ * bit_tree, char data, bool NYTnode = false) {
 			bool right_node_found;
 			if (bit_tree->right != NULL)
 				right_node_found = _find_nodes_(bit_tree->right, data);
-			// ±éÀúÁ½±ßµÄ
+			// éå†ä¸¤è¾¹çš„
 			if (left_node_found || right_node_found) {
 				return true;
 			}
+			return false;
 		}
 	}
 
-	// ÒÔÉÏ²Ù×÷¾ùÃ»ÓĞÕÒµ½½Úµã£¬ÕÒµ½NYTnode
+	// ä»¥ä¸Šæ“ä½œå‡æ²¡æœ‰æ‰¾åˆ°èŠ‚ç‚¹ï¼Œæ‰¾åˆ°NYTnode
 	if (!bit_tree->NYT) {
 		if (bit_tree->left != NULL)
 			_find_nodes_(bit_tree->left, data, true);
