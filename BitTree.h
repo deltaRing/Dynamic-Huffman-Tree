@@ -263,16 +263,16 @@ void _update_bit_tree_(_bit_tree_ * bit_tree) {
 	bool * NYTs = new bool[label];
 	_iterate_bit_tree(bit_tree, weights, numbers, NYTs);
 
-	for (int ii = 0; ii < label; ii++) {
-		cout << weights[ii] << " ";
-	}
-	cout << endl;
+	//for (int ii = 0; ii < label; ii++) {
+	//	cout << weights[ii] << " ";
+	//}
+	//cout << endl;
 	
 	for (int ii = 0; ii < label; ii++) {
 		for (int jj = ii; jj < label; jj++) {
 			if (weights[ii] > weights[jj]) {
 				// 交换节点
-				std::cout << weights[ii] << " " << weights[jj] << endl;
+				//std::cout << weights[ii] << " " << weights[jj] << endl;
 				_bit_tree_ * temp1 = _locate_bit_tree_(bit_tree, ii);
 				_bit_tree_ * temp2 = _locate_bit_tree_(bit_tree, jj);
 				_swap_bit_tree_(temp1, temp2);
@@ -548,14 +548,28 @@ void _dhuff_decode_(_bit_tree_ * _header_, uint8_t transmit_buff[_MAXIMUM_BUFF_C
 	uint16_t previous_loop_used_bit = 0; // 上次循环使用到的位
 	_bit_tree_ * temp_tree = _header_;
 
+	if (internal_cnt != 0) {
+		uint8_t _temp_buff_ = transmit_buff[external_cnt];
+		_temp_buff_ = _rotl(_temp_buff_, 8 - internal_cnt);
+		/*transmit_buff[external_cnt] = _rotr(_temp_buff_ & 0x80, 7) +
+			_rotl(_rotr(_temp_buff_ & 0x40, 6), 1) +
+			_rotl(_rotr(_temp_buff_ & 0x20, 5), 2) +
+			_rotl(_rotr(_temp_buff_ & 0x10, 4), 3) +
+			_rotl(_rotr(_temp_buff_ & 0x08, 3), 4) +
+			_rotl(_rotr(_temp_buff_ & 0x04, 2), 5) +
+			_rotl(_rotr(_temp_buff_ & 0x02, 1), 6) +
+			_rotl(_rotr(_temp_buff_ & 0x01, 0), 7);*/
+		transmit_buff[external_cnt] = _temp_buff_;
+	}
+
 	for (int ii = 0; ii <= external_cnt; ii++) {
 		// 检测数据internal_cnt是不是刚好为0 如果是 不需要最后一层外部external_cnt遍历
 		if (ii == external_cnt && internal_cnt == 0) {
 			break;
 		}
 		uint8_t buff = transmit_buff[ii]; // 取出数据
-		uint8_t internal_cnt_loop = 8; // 计算偏移数据
-		previous_loop_used_bit = ii == external_cnt ? internal_cnt : previous_loop_used_bit; // 给最后一位数据做偏移
+		uint8_t internal_cnt_loop = (ii == external_cnt ? internal_cnt : 8); // 计算偏移数据
+		// previous_loop_used_bit = (ii == external_cnt ? internal_cnt : previous_loop_used_bit); // 给最后一位数据做偏移
 		bool receive_new_data = false;
 		for (int jj = previous_loop_used_bit; jj < internal_cnt_loop; jj++) {
 			uint8_t bit = _rotr((_rotl(buff, jj) & 0x80), 7);
@@ -591,7 +605,7 @@ void _dhuff_decode_(_bit_tree_ * _header_, uint8_t transmit_buff[_MAXIMUM_BUFF_C
 				temp_new_data += bit;
 			}
 			uint8_t next_data_end = current_cnt;
-			temp_buff = transmit_buff[ii+1]; // 进入下一个字节
+			temp_buff = transmit_buff[ii + 1]; // 进入下一个字节
 			for (int iii = 0; iii < next_data_end; iii++) {
 				// 定义数据都是8位的
 				temp_new_data = _rotl(temp_new_data, 1);
